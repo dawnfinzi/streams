@@ -15,7 +15,6 @@ import scipy.io
 
 data_dir = '../../../data/'
 subjid = ['01', '02', '03', '04', '05', '06', '07', '08']
-ROI_names = ['Unknown', 'Early', 'Midventral', 'Midlateral', 'Midparietal', 'Ventral', 'Lateral', 'Parietal']
 n_repeats = 3
 hemis = ['rh', 'lh']
 #trial combos
