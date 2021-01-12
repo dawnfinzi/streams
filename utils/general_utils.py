@@ -33,3 +33,14 @@ def featurewise_norm(data, fmean=None, fvar=None):
     data = data - fmean  #subtract the feature-wise mean of the data
     data = data / np.maximum(fvar, 1e-5)  #divide by the feature-wise std of the data
     return data, fmean, fvar
+
+# (Credit to Eshed: https://github.com/VPNL/submillimeter_representations/blob/master/submm/utils/rsm_utils.py)
+def get_lower_tri(x, with_diagonal=False):
+    """
+    Returns the lower triangle of a provided matrix
+    Inputs
+        x (np.ndarray): 2D matrix to get triangle from
+        with_diagonal (bool): if True, keeps the diagonal as part of lower triangle
+    """
+    k = 0 if with_diagonal else -1
+    return x[np.tril_indices_from(x, k=k)]
