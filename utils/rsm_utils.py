@@ -7,6 +7,8 @@ import scipy.io
 import nibabel.freesurfer.mghformat as mgh
 import pickle
 
+local_data_dir = '/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/'
+data_dir = '/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/data/'
 
 def get_flat_lower_tri(x, diagonal=False):
     """
@@ -48,7 +50,7 @@ def get_reliability_data(subjects, hemi):
         reliability.append(sh['mean'])
     return reliability
 
-def make_flat_rsms(subjects, ROIs, hemi, thresh, local_data_dir = '/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/', zscore=True)):
+def make_flat_rsms(subjects, ROIs, hemi, thresh, zscore=True)):
     """
     Returns flattened lower triangle of RSM
     (RSM is RSM for each requested subject and ROI on the 515 shared images)
@@ -57,7 +59,6 @@ def make_flat_rsms(subjects, ROIs, hemi, thresh, local_data_dir = '/oak/stanford
         ROIs: which ROIs to include
         hemi: which hemisphere to pull data for ('rh' or 'lh')
         thresh: what cutoff split-half reliability threshold to use for voxel inclusion
-        local_data_dir: the data directory to pull from
         zscore: whether to use z-scored betas or non z-scored betas
     """
     #get ROI data
