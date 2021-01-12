@@ -9,6 +9,7 @@ import pickle
 
 local_data_dir = '/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/'
 data_dir = '/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/data/'
+n_repeats = 3
 
 def get_flat_lower_tri(x, diagonal=False):
     """
@@ -50,7 +51,7 @@ def get_reliability_data(subjects, hemi):
         reliability.append(sh['mean'])
     return reliability
 
-def make_flat_rsms(subjects, ROIs, hemi, thresh, zscore=True)):
+def make_flat_rsms(subjects, ROIs, hemi, thresh, zscore=True):
     """
     Returns flattened lower triangle of RSM
     (RSM is RSM for each requested subject and ROI on the 515 shared images)
@@ -78,13 +79,13 @@ def make_flat_rsms(subjects, ROIs, hemi, thresh, zscore=True)):
             betas_by_repeat_by_ROI = pickle.load(filehandle)
         
     #Replace voxels with split-half reliability < thresh with NaNs and then trim those from data structure
-    sh_by_ROI = [[[] for j in range(len(ROIs)-1)] for i in range(len(subjid))]
+    sh_by_ROI = [[[] for j in range(len(ROIs)-1)] for i in range(len(subjects))]
     #organize
-    for sidx, sid in enumerate(subjid):  
+    for sidx, sid in enumerate(subjects):  
         for roi_idx in range(len(ROIs)-1):       
             sh_by_ROI[sidx][roi_idx]=reliability[sidx][:,streams[sidx] == roi_idx+1]
     #convert to nans
-    for sidx, sid in enumerate(subjid):  
+    for sidx, sid in enumerate(subjects):  
         for roi_idx in range(len(ROIs)-1): 
             for vox in range(len(sh_by_ROI[sidx][roi_idx][0])):
                 if sh_by_ROI[sidx][roi_idx][0][vox] < thresh:
@@ -92,7 +93,7 @@ def make_flat_rsms(subjects, ROIs, hemi, thresh, zscore=True)):
                     betas_by_repeat_by_ROI[sidx][roi_idx][1][:,vox]=np.nan
                     betas_by_repeat_by_ROI[sidx][roi_idx][2][:,vox]=np.nan    
     #trim out nans
-    for sidx, sid in enumerate(subjid):   
+    for sidx, sid in enumerate(subjects):   
         for roi_idx in range(len(ROIs)-1): 
             for r in range(n_repeats):
                 temp = betas_by_repeat_by_ROI[sidx][roi_idx][r]
@@ -102,10 +103,10 @@ def make_flat_rsms(subjects, ROIs, hemi, thresh, zscore=True)):
    
     #Create RSMS for all the ROIs, repeats and subjects
     tril_flat_shape = int((betas_by_repeat_by_ROI[0][0][0].shape[0]**2/2) - (betas_by_repeat_by_ROI[0][0][0].shape[0]/2))
-    flat_rsm = np.zeros((len(subjid),len(ROI_names)-1, tril_flat_shape, n_repeats))
-    rsm = np.zeros((len(subjid),len(ROI_names)-1,n_repeats,betas_by_repeat_by_ROI[0][0][0].shape[0],betas_by_repeat_by_ROI[0][0][0].shape[0]))
+    flat_rsm = np.zeros((len(subjects),len(ROIs)-1, tril_flat_shape, n_repeats))
+    rsm = np.zeros((len(subjects),len(ROIs)-1,n_repeats,betas_by_repeat_by_ROI[0][0][0].shape[0],betas_by_repeat_by_ROI[0][0][0].shape[0]))
 
-    for sidx, sid in enumerate(subjid):
+    for sidx, sid in enumerate(subjects):
         for roi_idx in range(len(ROIs)-1):
             for r in range(n_repeats):
                 rsm[sidx,roi_idx,r,:,:] = np.corrcoef(betas_by_repeat_by_ROI[sidx][roi_idx][r])
