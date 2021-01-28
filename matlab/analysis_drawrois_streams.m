@@ -15,9 +15,9 @@ lh_nc = nc.vals(1:(n_vertices/2));
 rh_nc = nc.vals((n_vertices/2)+1:end);
 
 % background maps 
-mgznames = {'corticalsulc' 'Kastner2015' {lh_nc rh_nc}};  % quantities of interest (1 x Q)
-crngs = {[0 28] [0 25] [0 75]};  % ranges for the quantities (1 x Q)
-cmaps = {jet(256) jet(256) jet};  % colormaps for the quantities (1 x Q)
+mgznames = {'corticalsulc' 'Kastner2015'}; {lh_nc rh_nc}};  % quantities of interest (1 x Q)
+crngs = {[0 28] [0 25]}; [0 75]};  % ranges for the quantities (1 x Q)
+cmaps = {jet(256) jet(256)}; jet};  % colormaps for the quantities (1 x Q)
 threshs = {0.5 0.5 [10]};
 
 % roi info
@@ -38,4 +38,4 @@ roivals = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Da
 %roivals = [];
 
 %% do it
-%%cvndefinerois;
+cvndefinerois;
