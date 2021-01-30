@@ -7,13 +7,14 @@ fsdir = [nsd_datalocation '/freesurfer'];
 
 % define
 hemis = {'lh' 'rh'};
-cutoff = 16;           % all vertices within X mm of this one. the full diameter is 2*X.
+cutoff = 4;           % all vertices within X mm of this one. the full diameter is 2*X.
 dsurf = 'fsaverage3';  % fsaverage3 means every 16 mm edge distance
 
 % do it
 searchlightidxs = {};   % cell of 8 subjects x 2 hemis x L, each is row vector with indices of subject-native vertices
 searchlightpeaks = {};  % cell of 8 subjects x 2 hemis, each is 1 x L with subject-native indices of where the searchlight is centered
 propagatematrix = {};   % cell of 8 subjects x 2 hemis, each is V x 1 with 1-index (between 1-L) with the searchlight result to inherit
+
 for hh=1:length(hemis)
 
   % load the decimated surface
@@ -48,20 +49,20 @@ for hh=1:length(hemis)
 
     end
 
-    % figure out the propagation of values
-    ix = searchlightpeaks{subjix,hh};  % where do we have searchlights centered?
-    f = griddata(surfS.vertices(ix,1),surfS.vertices(ix,2),surfS.vertices(ix,3),(1:length(ix))', ...
-                 surfS.vertices(:,1),surfS.vertices(:,2),surfS.vertices(:,3),'nearest');  % V x 1 with index of nearest searchlight
-    propagatematrix{subjix,hh} = f;
+%     % figure out the propagation of values
+%     ix = searchlightpeaks{subjix,hh};  % where do we have searchlights centered?
+%     f = griddata(surfS.vertices(ix,1),surfS.vertices(ix,2),surfS.vertices(ix,3),(1:length(ix))', ...
+%                  surfS.vertices(:,1),surfS.vertices(:,2),surfS.vertices(:,3),'nearest');  % V x 1 with index of nearest searchlight
+%     propagatematrix{subjix,hh} = f;
 
   end
   
 end
 
-% save
-save([nsd_datalocation('local') '/searchlight/' sprintf('searchix_radius%d_%s.mat',cutoff,dsurf)],'cutoff','dsurf','searchlightidxs','searchlightpeaks','propagatematrix');
-
-% propagatematrix{subjix,hemi} has V x 1 where elements are the 1-indexed searchlight from which values should be propagated
+% % save
+% save([nsd_datalocation('local') '/searchlight/' sprintf('searchix_radius%d_%s.mat',cutoff,dsurf)],'cutoff','dsurf','searchlightidxs','searchlightpeaks','propagatematrix');
+% 
+% % propagatematrix{subjix,hemi} has V x 1 where elements are the 1-indexed searchlight from which values should be propagated
 
 %% %%%%% EXPORT
 
@@ -90,9 +91,9 @@ end
 
 %%%%% JUNK
 
-ok = [];
-for ll=1:642
-  ok(ll) = mean(a1(searchlightidxs{2,1,ll}));
-end
-
-fulldata = ok(propagatematrix{2,1});
+% ok = [];
+% for ll=1:642
+%   ok(ll) = mean(a1(searchlightidxs{2,1,ll}));
+% end
+% 
+% fulldata = ok(propagatematrix{2,1});
