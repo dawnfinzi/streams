@@ -7,7 +7,7 @@ fsdir = [nsd_datalocation '/freesurfer'];
 
 % define
 hemis = {'lh' 'rh'};
-cutoff = 4;           % all vertices within X mm of this one. the full diameter is 2*X.
+cutoff = 10;           % all vertices within X mm of this one. the full diameter is 2*X.
 dsurf = 'fsaverage3';  % fsaverage3 means every 16 mm edge distance
 
 % do it
