@@ -1,4 +1,4 @@
-n%% Load and resave split-half reliability maps (created in python)
+%% Load and resave split-half reliability maps (created in python)
 
 clear all
 
