@@ -105,7 +105,7 @@ def main(subjid, hemi, roi_name, thresh=0.2):
             
             if(sess==1):
                 for roi_idx in range(num_rois):
-                    betas_by_ROI[roi_idx] = sess_betas[:,rh_parcels[sidx] == roi_idx+1]
+                    betas_by_ROI[roi_idx] = sess_betas[:,parcels[sidx] == roi_idx+1]
             else:
                 for roi_idx in range(num_rois):
                     betas_by_ROI[roi_idx] = np.append(betas_by_ROI[roi_idx],sess_betas[:,parcels[sidx] == roi_idx+1],axis=0)
@@ -146,7 +146,7 @@ def main(subjid, hemi, roi_name, thresh=0.2):
     for roi_idx in range(num_rois):
         for r in range(n_repeats):
             rsm = np.corrcoef(betas_by_repeat_by_ROI[sidx][roi_idx][r])
-            flat_rsm_r[roi_idx, :,r] = get_flat_lower_tri(rsm,diagonal=False)
+            flat_rsm[roi_idx, :, r] = get_flat_lower_tri(rsm,diagonal=False)
 
     r1_trial_order = [0, 0, 1, 1, 2, 2]
     r2_trial_order = [1, 2, 0, 2, 0, 1]
@@ -157,9 +157,9 @@ def main(subjid, hemi, roi_name, thresh=0.2):
     for roi_idx1 in range(num_rois): #rows - i.e. model candidate
         
         split_half = np.zeros((3))
-        split_half = [stats.pearsonr(flat_rsm_r1[roi_idx1,:],flat_rsm_r2[roi_idx1,:])[0],
-                    stats.pearsonr(flat_rsm_r1[roi_idx1,:],flat_rsm_r3[roi_idx1,:])[0],
-                    stats.pearsonr(flat_rsm_r2[roi_idx1,:],flat_rsm_r3[roi_idx1,:])[0]]
+        split_half = [stats.pearsonr(flat_rsm[roi_idx1,:,0],flat_rsm[roi_idx1,:,1])[0],
+                    stats.pearsonr(flat_rsm[roi_idx1,:,0],flat_rsm[roi_idx1,:,2])[0],
+                    stats.pearsonr(flat_rsm[roi_idx1,:,1],flat_rsm[roi_idx1,:,2])[0]]
         NC_model = np.mean(split_half) * 100
         
         for roi_idx2 in range(num_rois): #columns - i.e. target data

@@ -7,7 +7,8 @@ clear all
 close all
 
 %% Sample the sphere
-sampling = 200; %300 is relatively fine 
+%addpath(genpath('/home/dfinzi/Desktop/S2-Sampling-Toolbox'))
+sampling = 300; %300 is relatively fine 
 [SP, Tri, ~,~] = ParticleSampleSphere('N', sampling); 
 % fv = struct('faces',Tri,'vertices',SP);
 % fv = SubdivideSphericalMesh(fv,2);
@@ -17,7 +18,7 @@ SP_scaled = SP*100;
 %% Convert to specified subject and hemi
 hemis = {'lh' 'rh'};
 
-subjix=6;hh=1;
+subjix=6;hh=2;
 subjid='subj06';
 
 surfS = cvnreadsurface(sprintf('subj%02d',subjix),hemis{hh},'sphere','orig');
@@ -54,7 +55,7 @@ for r = 1:max(iix)
 end
 
 if hh == 2 %left hemi already completed
-    left = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/lh.tessellate_300cl.mgz',subjid));  % load in an existing file?
+    left = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/lh.tessellate_300.mgz',subjid));  % load in an existing file?
     roivals = [left; iix];
 else
     roivals = iix;  
