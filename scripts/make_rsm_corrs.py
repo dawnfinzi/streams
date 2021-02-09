@@ -35,27 +35,26 @@ def main(subjid, hemi, roi_name, thresh=0.2):
 
     #get ROI data
     parcels = []
-    for sidx, sid in enumerate(subjid):
-        mgh_file = mgh.load(local_data_dir+'freesurfer/subj'+ sid +'/' + hemi + '.' + roi_name + '.mgz')
-        parcels.append(mgh_file.get_fdata()[:,0,0])
+    mgh_file = mgh.load(local_data_dir+'freesurfer/subj'+ subjid +'/' + hemi + '.' + roi_name + '.mgz')
+    parcels.append(mgh_file.get_fdata()[:,0,0])
 
     num_rois = int(np.max(parcels))
 
     #get split-half reliablity for each voxel
-    reliability = get_reliability_data(subjid, hemi)
+    reliability = get_reliability_data([subjid], hemi)
 
-    sh_by_ROI = [[[] for j in range(num_rois)] for i in range(len(subjid))]
-    total_vox = np.zeros((len(subjid), num_rois))
+    sh_by_ROI = [[[] for j in range(num_rois)] for i in range(len([subjid]))]
+    total_vox = np.zeros((len([subjid]), num_rois))
 
-    for sidx, sid in enumerate(subjid):  
+    for sidx, sid in enumerate([subjid]):  
         for roi_idx in range(num_rois):       
             sh_by_ROI[sidx][roi_idx]=reliability[sidx][:,parcels[sidx] == roi_idx+1]
             total_vox[sidx,roi_idx] = len(sh_by_ROI[sidx][roi_idx][0])
 
     #get trial ids and mask        
     all_ids = []
-    max_session = np.zeros(len(subjid))
-    for sidx, sid in enumerate(subjid):
+    max_session = np.zeros(len([subjid]))
+    for sidx, sid in enumerate([subjid]):
         
         data = pd.read_csv(data_dir+'nsddata/ppdata/subj'+ sid +'/behav/responses.tsv', sep='\t')
         
@@ -64,7 +63,7 @@ def main(subjid, hemi, roi_name, thresh=0.2):
         all_ids.append(np.array(data['73KID']))
 
     which_reps = []
-    for sidx, sid in enumerate(subjid):
+    for sidx, sid in enumerate([subjid]):
         vals, idx_start, count = np.unique(all_ids[sidx], return_counts=True,
                                         return_index=True)
         which_reps.append(vals[count == n_repeats])
@@ -73,7 +72,7 @@ def main(subjid, hemi, roi_name, thresh=0.2):
 
     id_nums_3reps = []
     mask_3reps = []
-    for sidx, sid in enumerate(subjid):
+    for sidx, sid in enumerate([subjid]):
         
         data = pd.read_csv(data_dir+'nsddata/ppdata/subj'+ sid +'/behav/responses.tsv', sep='\t')
         
@@ -85,7 +84,7 @@ def main(subjid, hemi, roi_name, thresh=0.2):
     #get and sort z-scored betas
     betas_by_ROI = [[] for j in range(num_rois)]
 
-    for sidx, sid in enumerate(subjid):
+    for sidx, sid in enumerate([subjid]):
         
         mask = mask_3reps[sidx]
         sorted_betas = []
@@ -112,8 +111,8 @@ def main(subjid, hemi, roi_name, thresh=0.2):
                     betas_by_ROI[roi_idx] = np.append(betas_by_ROI[roi_idx],sess_betas[:,parcels[sidx] == roi_idx+1],axis=0)
             
             del sess_betas
-    betas_by_repeat_by_ROI = [[[] for j in range(num_rois)] for i in range(len(subjid))]
-    for sidx, sid in enumerate(subjid):
+    betas_by_repeat_by_ROI = [[[] for j in range(num_rois)] for i in range(len([subjid]))]
+    for sidx, sid in enumerate([subjid]):
         for roi_idx in range(num_rois):  
             
             sorted_betas = betas_by_ROI[roi_idx][arr1inds[::-1]]
@@ -123,7 +122,7 @@ def main(subjid, hemi, roi_name, thresh=0.2):
 
     #Replace voxels with split-half reliability < thresh with NaNs and then trim those from data structure
     #convert to nans
-    for sidx, sid in enumerate(subjid):  
+    for sidx, sid in enumerate([subjid]):  
         for roi_idx in range(num_rois): 
             for vox in range(len(sh_by_ROI[sidx][roi_idx][0])):
                 if sh_by_ROI[sidx][roi_idx][0][vox] < thresh:
@@ -131,7 +130,7 @@ def main(subjid, hemi, roi_name, thresh=0.2):
                     betas_by_repeat_by_ROI[sidx][roi_idx][1][:,vox]=np.nan
                     betas_by_repeat_by_ROI[sidx][roi_idx][2][:,vox]=np.nan    
     #trim out nans
-    for sidx, sid in enumerate(subjid):   
+    for sidx, sid in enumerate([subjid]):   
         for roi_idx in range(num_rois): 
             for r in range(n_repeats):
                 temp = betas_by_repeat_by_ROI[sidx][roi_idx][r]
@@ -179,7 +178,7 @@ def main(subjid, hemi, roi_name, thresh=0.2):
             mega_matrix[roi_idx1,roi_idx2] = np.mean(rsm_corr) * np.sqrt(100/NC_model) * np.sqrt(100/NC_target)
 
     #save to local data folder
-    save_file = local_data_dir + 'processed/' + subjid[0] + '_' + hemi + '_' + roi_name + '.data'
+    save_file = local_data_dir + 'processed/' + subjid + '_' + hemi + '_' + roi_name + '.data'
 
     with open(save_file, 'wb') as filehandle:
         # store the data as binary data stream
