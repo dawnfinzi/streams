@@ -1,4 +1,3 @@
-  
 """
 Calculate and save maps of split-half reliability for each voxel
 
