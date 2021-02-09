@@ -28,13 +28,15 @@ local_data_dir = '/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local
 
 
 def main(subjid, hemi, roi_name, thresh=0.2):
+    
+    print(subjid)
 
     n_repeats = 3
 
     #get ROI data
     parcels = []
     for sidx, sid in enumerate(subjid):
-        mgh_file = mgh.load(local_data_dir+'freesurfer/subj'+ sid +'/rh.tessellate.mgz')
+        mgh_file = mgh.load(local_data_dir+'freesurfer/subj'+ sid +'/' + hemi + '.' + roi_name + '.mgz')
         parcels.append(mgh_file.get_fdata()[:,0,0])
 
     num_rois = int(np.max(parcels))
@@ -187,7 +189,7 @@ def main(subjid, hemi, roi_name, thresh=0.2):
 if __name__ == "__main__":
     # Parse command line args
     parser = argparse.ArgumentParser()
-    parser.add_argument("--subjid", type=list, help="subject id as list")
+    parser.add_argument("--subjid", type=str)
     parser.add_argument("--hemi", type=str)
     parser.add_argument("--roi_name", type=str)
     parser.add_argument("--thresh", type=float, default=0.2)
