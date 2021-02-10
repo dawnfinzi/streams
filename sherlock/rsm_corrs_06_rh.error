@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/code/streams/scripts/make_rsm_corrs.py", line 9, in <module>
+srun: error: sh03-01n63: task 0: Exited with exit code 1
+srun: launch/slurm: _step_signal: Terminating StepId=17823766.0
+    import pandas as pd
+ImportError: No module named pandas

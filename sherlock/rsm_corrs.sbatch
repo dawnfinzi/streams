@@ -14,6 +14,6 @@
 #SBATCH --mem=256000
 
 module load python/3.6.1
-source ${OAK}/biac2/kgs/projects/Dawn/NSD_venv/bin/activate 
-srun ${OAK}/biac2/kgs/projects/Dawn/NSD/code/streams/scripts/make_rsm_corrs.py --subjid "06" --hemi 'rh' --roi_name 'tessellate_300' --thresh 0.0
+source ${OAK}/biac2/kgs/projects/Dawn/sherlock_venv/bin/activate 
+srun python ${OAK}/biac2/kgs/projects/Dawn/NSD/code/streams/scripts/make_rsm_corrs.py --subjid "06" --hemi 'rh' --roi_name 'tessellate_300' --thresh 0.0
 
