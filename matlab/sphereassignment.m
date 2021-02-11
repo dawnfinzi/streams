@@ -7,8 +7,8 @@ clear all
 close all
 
 %% Sample the sphere
-%addpath(genpath('/home/dfinzi/Desktop/S2-Sampling-Toolbox'))
-sampling = 400; %300 is relatively fine 
+addpath(genpath('/home/dfinzi/Desktop/S2-Sampling-Toolbox'))
+sampling = 500; %300 is relatively fine 
 [SP, Tri, ~,~] = ParticleSampleSphere('N', sampling); 
 % fv = struct('faces',Tri,'vertices',SP);
 % fv = SubdivideSphericalMesh(fv,2);

@@ -1,20 +1,26 @@
 subjix=6;hh=2;
 subjid='subj06';
 
-left = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/lh.tessellate_300.mgz',subjid));  % load in an existing file?
-right = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/rh.tessellate_300.mgz',subjid));  % load in an existing file?
+left = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/lh.tessellate_400.mgz',subjid));  % load in an existing file?
+right = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/rh.tessellate_400.mgz',subjid));  % load in an existing file?
 roivals = [left; right];
 
 %% Manual plotting and saving of mgzs using cvndefinerois
 roilabels=[];
-sample_cols = jet(5);
+sample_cols = hsv(4);
 for r = 1:max(roivals);
-    if split1(r) == 0
-        col(r,:) = [1, 1, 1];
-    elseif split1(r) == 1
-        col(r,:) = sample_cols(1,:);
-    end
+    col(r,:) = sample_cols(split2(r)+1,:);
 end
+
+
+% sample_cols = jet(5);
+% for r = 1:max(roivals);
+%     if split1(r) == 0
+%         col(r,:) = [1, 1, 1];
+%     elseif split1(r) == 1
+%         col(r,:) = sample_cols(1,:);
+%     end
+% end
 % for r = 1:max(roivals);
 %     if split4(r) == 0
 %         col(r,:) = [1, 1, 1];
