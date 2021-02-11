@@ -1,5 +1,5 @@
 """
-Given some subject and set of ROIs, create RSMs across all (~10000) images and correlate RSMs across ROIs
+Given some subject, hemisphere and set of ROIs, create RSMs across all (~10000) images and correlate RSMs across ROIs
 
 Saves a "mega matrix" that is the correlation matrix for the ROIs
 """
@@ -27,7 +27,7 @@ data_dir = '/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/data/'
 local_data_dir = '/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/'
 
 
-def main(subjid, hemi, roi_name, thresh=0.2):
+def main(subjid, hemi, roi_name, thresh=0.0):
     
     print(subjid)
 
@@ -151,6 +151,7 @@ def main(subjid, hemi, roi_name, thresh=0.2):
     r1_trial_order = [0, 0, 1, 1, 2, 2]
     r2_trial_order = [1, 2, 0, 2, 0, 1]
 
+    print('starting mega matrix')
     #make the mega matrix!
     mega_matrix = np.zeros((num_rois,num_rois))
 
@@ -191,7 +192,7 @@ if __name__ == "__main__":
     parser.add_argument("--subjid", type=str)
     parser.add_argument("--hemi", type=str)
     parser.add_argument("--roi_name", type=str)
-    parser.add_argument("--thresh", type=float, default=0.2)
+    parser.add_argument("--thresh", type=float, default=0.0)
     ARGS, _ = parser.parse_known_args()
 
     main(
