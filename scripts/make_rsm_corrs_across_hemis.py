@@ -153,6 +153,10 @@ def main(subjid, roi_name, thresh=0.0):
         both_flat_rsm.append(hemi_flat_rsm)
         both_num_rois.append(num_rois)
 
+        del hemi_flat_rsm
+        del betas_by_ROI
+        del betas_by_repeat_by_ROI
+
     r1_trial_order = [0, 0, 1, 1, 2, 2]
     r2_trial_order = [1, 2, 0, 2, 0, 1]
 
