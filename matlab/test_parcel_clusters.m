@@ -7,9 +7,10 @@ roivals = [left; right];
 
 %% Manual plotting and saving of mgzs using cvndefinerois
 roilabels=[];
-sample_cols = hsv(4);
+clear col
+sample_cols = hsv(10);
 for r = 1:max(roivals);
-    col(r,:) = sample_cols(split2(r)+1,:);
+    col(r,:) = sample_cols(k7(r)+1,:);
 end
 
 
