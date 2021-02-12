@@ -191,7 +191,7 @@ def main(subjid, roi_name, thresh=0.0):
             split_half = np.zeros((3))
             split_half = [stats.pearsonr(flat_rsm[hidx2][roi_idx2,:,0],flat_rsm[hidx2][roi_idx2,:,1])[0],
                         stats.pearsonr(flat_rsm[hidx2][roi_idx2,:,0],flat_rsm[hidx2][roi_idx2,:,2])[0],
-                        stats.pearsonr(flat_rsm[hidx2][roi_idx2,:,1],flat_rsm[hidx2]roi_idx2,:,2])[0]]
+                        stats.pearsonr(flat_rsm[hidx2][roi_idx2,:,1],flat_rsm[hidx2][roi_idx2,:,2])[0]]
             NC_target = np.mean(split_half) * 100
             
             rsm_corr = np.zeros((6))

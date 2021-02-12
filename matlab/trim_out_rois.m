@@ -1,4 +1,4 @@
-function trim_out_rois(subjix, subjid, roi_name, thresh)
+function trim_out_rois(subjix, subjid, roi_name, thresh, vox_cutoff)
 
 % function trim_out_rois(subix, subjid, roi_name, thresh)
 %
@@ -6,13 +6,15 @@ function trim_out_rois(subjix, subjid, roi_name, thresh)
 % <subjid> is is corresponding string for subject
 % <thresh> is threshold for split-half reliability to use (float)
 % <roi_name> is the inner name for the roi (string). i.e. rh.roi_name.mgz
+% <vox_cutoff> is the required number of voxels for inclusion (default: 5)
 %
 % Example)
 %subjix=5;
 %subjid='subj05';
 %thresh = .2;
 %roi_name = 'tessellate_300';
-%trim_out_rois(subjix, subjid, roi_name, thresh)
+%vox_cutoff = 5;
+%trim_out_rois(subjix, subjid, roi_name, thresh, vox_cutoff)
 %
 % code to take parcellation ROIs and trim out ROIs with no above threshold voxels
 %
@@ -44,7 +46,7 @@ for r = 1:max(left)
     num_vox_l(r) = sum(sh_by_ROI > thresh);
 end
 
-zero_indices = find(num_vox_l == 0); %ROIs with no remaining voxels
+zero_indices = find(num_vox_l < vox_cutoff); %ROIs with no remaining voxels
 
 % remove ROIs with no above threshold voxels
 for l = 1:length(left)
@@ -53,8 +55,17 @@ for l = 1:length(left)
     end
 end
 
+%renumber ROIs
+count = 1;
+for r = 1:max(left)  
+    if ~isempty(left(find(left == r)))  %if roi not removed
+        left(find(left==r)) = count;
+        count = count+1;
+    end
+end
 
-%% Reft hemi deletion
+
+%% Right hemi deletion
 
 % get num voxels above thresh for each ROI
 for r = 1:max(right)
@@ -62,12 +73,21 @@ for r = 1:max(right)
     num_vox_r(r) = sum(sh_by_ROI > thresh);
 end
 
-zero_indices = find(num_vox_r == 0);%ROIs with no remaining voxels
+zero_indices = find(num_vox_r < vox_cutoff);%ROIs with no remaining voxels
 
 % remove ROIs with no above threshold voxels
 for l = 1:length(right)
     if sum(right(l)==zero_indices)>0 %roi with zero vox
         right(l) = 0;
+    end
+end
+
+%renumber ROIs
+count = 1;
+for r = 1:max(right)  
+    if ~isempty(right(find(right== r)))  %if roi not removed
+        right(find(right==r)) = count;
+        count = count+1;
     end
 end
 
