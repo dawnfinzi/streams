@@ -219,7 +219,6 @@ if __name__ == "__main__":
 
     main(
         ARGS.subjid,
-        ARGS.hemi,
         ARGS.roi_name,
         thresh = ARGS.thresh,
     )
