@@ -1,16 +1,16 @@
-subjix=5;hh=2;
-subjid='subj05';
+subjix=6;hh=2;
+subjid='subj06';
 
-left = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/lh.tessellate_300.mgz',subjid));  % load in an existing file?
-right = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/rh.tessellate_300.mgz',subjid));  % load in an existing file?
+left = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/lh.tessellate_500_trim10.mgz',subjid));  % load in an existing file?
+right = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/rh.tessellate_500_trim10.mgz',subjid));  % load in an existing file?
 roivals = [left; right];
 
 %% Manual plotting and saving of mgzs using cvndefinerois
 roilabels=[];
 clear col
-sample_cols = hsv(15);
+sample_cols = hsv(20);
 for r = 1:max(roivals);
-    col(r,:) = sample_cols(full(r)+1,:);
+    col(r,:) = sample_cols(ap(r)+1,:);
 end
 
 
