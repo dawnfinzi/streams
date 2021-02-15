@@ -174,9 +174,9 @@ def main(subjid, roi_name, thresh=0.0):
             roi_idx1  = int(idx1-both_num_rois[0]) #roi
         
         split_half = np.zeros((3))
-        split_half = [stats.pearsonr(flat_rsm[hidx1][roi_idx1,:,0],flat_rsm[hidx1][roi_idx1,:,1])[0],
-                    stats.pearsonr(flat_rsm[hidx1][roi_idx1,:,0],flat_rsm[hidx1][roi_idx1,:,2])[0],
-                    stats.pearsonr(flat_rsm[hidx1][roi_idx1,:,1],flat_rsm[hidx1][roi_idx1,:,2])[0]]
+        split_half = [stats.pearsonr(both_flat_rsm[hidx1][roi_idx1,:,0],both_flat_rsm[hidx1][roi_idx1,:,1])[0],
+                    stats.pearsonr(both_flat_rsm[hidx1][roi_idx1,:,0],both_flat_rsm[hidx1][roi_idx1,:,2])[0],
+                    stats.pearsonr(both_flat_rsm[hidx1][roi_idx1,:,1],both_flat_rsm[hidx1][roi_idx1,:,2])[0]]
         NC_model = np.mean(split_half) * 100
         
         for idx2 in range(total_combs): #columns - i.e. target data
@@ -189,15 +189,15 @@ def main(subjid, roi_name, thresh=0.0):
                 roi_idx2  = int(idx2-both_num_rois[0]) #roi
             
             split_half = np.zeros((3))
-            split_half = [stats.pearsonr(flat_rsm[hidx2][roi_idx2,:,0],flat_rsm[hidx2][roi_idx2,:,1])[0],
-                        stats.pearsonr(flat_rsm[hidx2][roi_idx2,:,0],flat_rsm[hidx2][roi_idx2,:,2])[0],
-                        stats.pearsonr(flat_rsm[hidx2][roi_idx2,:,1],flat_rsm[hidx2][roi_idx2,:,2])[0]]
+            split_half = [stats.pearsonr(both_flat_rsm[hidx2][roi_idx2,:,0],both_flat_rsm[hidx2][roi_idx2,:,1])[0],
+                        stats.pearsonr(both_flat_rsm[hidx2][roi_idx2,:,0],both_flat_rsm[hidx2][roi_idx2,:,2])[0],
+                        stats.pearsonr(both_flat_rsm[hidx2][roi_idx2,:,1],both_flat_rsm[hidx2][roi_idx2,:,2])[0]]
             NC_target = np.mean(split_half) * 100
             
             rsm_corr = np.zeros((6))
             for r in range(6):
-                rsm_corr[r] = stats.pearsonr(flat_rsm[hidx1][roi_idx1,:, r1_trial_order[r]],
-                                            flat_rsm[hidx2][roi_idx2,:, r2_trial_order[r]])[0]
+                rsm_corr[r] = stats.pearsonr(both_flat_rsm[hidx1][roi_idx1,:, r1_trial_order[r]],
+                                            both_flat_rsm[hidx2][roi_idx2,:, r2_trial_order[r]])[0]
             
             mega_matrix[idx1,idx2] = np.mean(rsm_corr) * np.sqrt(100/NC_model) * np.sqrt(100/NC_target)
 
