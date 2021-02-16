@@ -1,8 +1,8 @@
 subjix=6;hh=2;
 subjid='subj06';
 
-left = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/lh.tessellate_500_trim10.mgz',subjid));  % load in an existing file?
-right = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/rh.tessellate_500_trim10.mgz',subjid));  % load in an existing file?
+left = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/lh.tessellate_750_trim10.mgz',subjid));  % load in an existing file?
+right = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/rh.tessellate_750_trim10.mgz',subjid));  % load in an existing file?
 roivals = [left; right];
 
 %% Manual plotting and saving of mgzs using cvndefinerois
