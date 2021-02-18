@@ -8,12 +8,12 @@ close all
 
 %% Sample the sphere
 addpath(genpath('/home/dfinzi/Desktop/S2-Sampling-Toolbox'))
-sampling = 1000; %300 is relatively fine 
+sampling = 100; %300 is relatively fine 
 [SP, Tri, ~,~] = ParticleSampleSphere('N', sampling); 
-%fv = struct('faces',Tri,'vertices',SP);
-%fv = SubdivideSphericalMesh(fv,2);
-%SP = fv.vertices;
-SP_scaled = SP*100;
+fv = struct('faces',Tri,'vertices',SP);
+fv = SubdivideSphericalMesh(fv,4);
+SP = fv.vertices;
+SP_scaled = SP;%*100;
 
 %% Convert to specified subject and hemi
 hemis = {'lh' 'rh'};
@@ -55,7 +55,7 @@ for r = 1:max(iix)
 end
 
 if hh == 2 %left hemi already completed
-    left = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/lh.tessellate_750_trim10.mgz',subjid));  % load in an existing file?
+    left = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/lh.tessellate_10vox.mgz',subjid));  % load in an existing file?
     roivals = [left; iix];
 else
     roivals = iix;  
@@ -63,7 +63,7 @@ end
 
 %% Manual plotting and saving of mgzs using cvndefinerois
 roilabels=[];
-cmap   = repmat(hsv(256), 1, 1);
+cmap   = repmat(hsv(10000), 1, 1);
 rng    = [0 max(roivals)];
 threshs = {[] [] []};
 

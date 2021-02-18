@@ -1,16 +1,27 @@
+clear all
+close all
+
 subjix=6;hh=2;
 subjid='subj06';
 
-left = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/lh.tessellate_750_trim10.mgz',subjid));  % load in an existing file?
-right = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/rh.tessellate_750_trim10.mgz',subjid));  % load in an existing file?
+l = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/lh.tessellate_1000_trim10.mgz',subjid));  % load in an existing file?
+left = zeros(length(l),1);
+
+right = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/rh.tessellate_1000_trim10.mgz',subjid));  % load in an existing file?
+%%if loading both hemis - update right roi nums to account for left
+% for i = 1:length(right)
+%     if right(i) ~= 0
+%         right(i) = right(i) + 90;
+%     end
+% end
 roivals = [left; right];
 
 %% Manual plotting and saving of mgzs using cvndefinerois
 roilabels=[];
 clear col
-sample_cols = hsv(20);
-for r = 1:max(roivals);
-    col(r,:) = sample_cols(ap(r)+1,:);
+sample_cols = hsv(30);
+for r = 1:max(right)
+    col(r,:) = sample_cols(full(r)+1,:);
 end
 
 
@@ -75,7 +86,7 @@ end
 cmap   = col;
 %cmap   = repmat(hsv(256), 1, 1);
 
-rng    = [0 max(roivals)];
+rng    = [0 max(right)];
 threshs = {[] [] []};
 
 mgznames = {'corticalsulc' 'Kastner2015', 'streams'};
