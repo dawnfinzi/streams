@@ -19,8 +19,8 @@ def get_flat_lower_tri(x, diagonal=False):
         diagonal (bool): if True, keeps the diagonal as part of lower triangle
     """
     k = 0 if diagonal else -1
-    lower_tri = np.tril(x, k).T.ravel()
-    return lower_tri[lower_tri != 0]
+    lower_idx = np.tril_indices(x.shape[0], k)
+    return x[lower_idx]
 
 def get_ROI_data(subjects, hemi):
     """
