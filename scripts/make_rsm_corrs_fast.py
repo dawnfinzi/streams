@@ -118,17 +118,9 @@ def main(subjid, hemi, roi_name):
             for r in range(n_repeats):
                 betas_by_repeat_by_ROI[sidx][roi_idx].insert(r,sorted_betas[r::3])
     
-    #Create RSMS for all the ROIs, repeats and subjects
+    #Create RSMS for all the ROIs, repeats and subjects (moved to within mega matrix loop for mem efficiency)
     tril_flat_shape = int((betas_by_repeat_by_ROI[0][0][0].shape[0]**2/2) - (betas_by_repeat_by_ROI[0][0][0].shape[0]/2))
-    flat_rsm = np.zeros((num_rois, tril_flat_shape, n_repeats), dtype=int)
-
     sidx = 0 #currently doing one subject at a time
-    for roi_idx in range(num_rois):
-        for r in range(n_repeats):
-            flip = betas_by_repeat_by_ROI[sidx][roi_idx][r].T
-            rsm = fast_pearson(flip,flip)
-            rsm_lowmem = np.around(rsm*convert_to_int,0)
-            flat_rsm[roi_idx, :, r] = get_flat_lower_tri(rsm_lowmem,diagonal=False)
 
     r1_trial_order = [0, 0, 1, 1, 2, 2]
     r2_trial_order = [1, 2, 0, 2, 0, 1]
@@ -139,24 +131,36 @@ def main(subjid, hemi, roi_name):
 
     for roi_idx1 in range(num_rois): #rows - i.e. model candidate
         
+        flat_rsm_roi1 = np.zeros((tril_flat_shape, n_repeats)
+        for r in range(n_repeats):
+            flip = betas_by_repeat_by_ROI[sidx][roi_idx1][r].T
+            rsm = fast_pearson(flip,flip)
+            flat_rsm_roi1[:, r] = get_flat_lower_tri(rsm,diagonal=False)
+
         split_half = np.zeros((3))
-        split_half = [fast_pearson(flat_rsm[roi_idx1,:,0]/convert_to_int,flat_rsm[roi_idx1,:,1]/convert_to_int)[0][0],
-                    fast_pearson(flat_rsm[roi_idx1,:,0]/convert_to_int,flat_rsm[roi_idx1,:,2]/convert_to_int)[0][0],
-                    fast_pearson(flat_rsm[roi_idx1,:,1]/convert_to_int,flat_rsm[roi_idx1,:,2]/convert_to_int)[0][0]]
+        split_half = [fast_pearson(flat_rsm_roi1[,:,0],flat_rsm[_roi1:,1])[0][0],
+                    fast_pearson(flat_rsm_roi1[,:,0],flat_rsm_roi1[:,2])[0][0],
+                    fast_pearson(flat_rsm_roi1[,:,1],flat_rsm_roi1[:,2])[0][0]]
         NC_model = np.mean(split_half) * 100
         
         for roi_idx2 in range(num_rois): #columns - i.e. target data
+
+            flat_rsm_roi2 = np.zeros((tril_flat_shape, n_repeats)
+            for r in range(n_repeats):
+                flip = betas_by_repeat_by_ROI[sidx][roi_idx2][r].T
+                rsm = fast_pearson(flip,flip)
+                flat_rsm_roi2[:, r] = get_flat_lower_tri(rsm,diagonal=False)
             
             split_half = np.zeros((3))
-            split_half = [fast_pearson(flat_rsm[roi_idx2,:,0]/convert_to_int,flat_rsm[roi_idx2,:,1]/convert_to_int)[0][0],
-                        fast_pearson(flat_rsm[roi_idx2,:,0]/convert_to_int,flat_rsm[roi_idx2,:,2]/convert_to_int)[0][0],
-                        fast_pearson(flat_rsm[roi_idx2,:,1]/convert_to_int,flat_rsm[roi_idx2,:,2]/convert_to_int)[0][0]]
+            split_half = [fast_pearson(flat_rsm_roi2[:,0],flat_rsm_roi2[:,1])[0][0],
+                        fast_pearson(flat_rsm_roi2[:,0],flat_rsm_roi2[:,2])[0][0],
+                        fast_pearson(flat_rsm_roi2[:,1],flat_rsm_roi2[:,2])[0][0]]
             NC_target = np.mean(split_half) * 100
             
             rsm_corr = np.zeros((6))
             for r in range(6):
-                rsm_corr[r] = fast_pearson(flat_rsm[roi_idx1,:, r1_trial_order[r]]/convert_to_int,
-                                            flat_rsm[roi_idx2,:, r2_trial_order[r]]/convert_to_int)[0][0]
+                rsm_corr[r] = fast_pearson(flat_rsm_roi2[:, r1_trial_order[r]],
+                                            flat_rsm_roi2[:, r2_trial_order[r]])[0][0]
             
             mega_matrix[roi_idx1,roi_idx2] = np.mean(rsm_corr) * np.sqrt(100/NC_model) * np.sqrt(100/NC_target)
 
