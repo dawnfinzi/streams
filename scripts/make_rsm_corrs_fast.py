@@ -131,21 +131,21 @@ def main(subjid, hemi, roi_name):
 
     for roi_idx1 in range(num_rois): #rows - i.e. model candidate
         
-        flat_rsm_roi1 = np.zeros((tril_flat_shape, n_repeats)
+        flat_rsm_roi1 = np.zeros((tril_flat_shape, n_repeats))
         for r in range(n_repeats):
             flip = betas_by_repeat_by_ROI[sidx][roi_idx1][r].T
             rsm = fast_pearson(flip,flip)
             flat_rsm_roi1[:, r] = get_flat_lower_tri(rsm,diagonal=False)
 
         split_half = np.zeros((3))
-        split_half = [fast_pearson(flat_rsm_roi1[,:,0],flat_rsm[_roi1:,1])[0][0],
-                    fast_pearson(flat_rsm_roi1[,:,0],flat_rsm_roi1[:,2])[0][0],
-                    fast_pearson(flat_rsm_roi1[,:,1],flat_rsm_roi1[:,2])[0][0]]
+        split_half = [fast_pearson(flat_rsm_roi1[:,0],flat_rsm_roi1[:,1])[0][0],
+                    fast_pearson(flat_rsm_roi1[:,0],flat_rsm_roi1[:,2])[0][0],
+                    fast_pearson(flat_rsm_roi1[:,1],flat_rsm_roi1[:,2])[0][0]]
         NC_model = np.mean(split_half) * 100
         
         for roi_idx2 in range(num_rois): #columns - i.e. target data
 
-            flat_rsm_roi2 = np.zeros((tril_flat_shape, n_repeats)
+            flat_rsm_roi2 = np.zeros((tril_flat_shape, n_repeats))
             for r in range(n_repeats):
                 flip = betas_by_repeat_by_ROI[sidx][roi_idx2][r].T
                 rsm = fast_pearson(flip,flip)
