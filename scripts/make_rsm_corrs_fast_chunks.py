@@ -32,11 +32,14 @@ def fast_pearson(x,y):
     yz = y - y.mean(axis=0)
     xzss = (xz * xz).sum(axis=0)
     yzss = (yz * yz).sum(axis=0)
-    r = np.matmul(xz.transpose(), yz) / np.sqrt(np.outer(xzss, yzss))
+    r = np.matmul(xz.transpose(), yz) / (np.sqrt(np.outer(xzss, yzss))+np.finfo(float).eps) #add machine prec. to avoid any divide by 0
     return np.maximum(np.minimum(r, 1.0), -1.0) #for precision issues
 
-def main(subjid, hemi, roi_name, chunks):
+def main(subjid, hemi, roi_name, min_idx, max_idx):
     
+    chunks = list(range(min_idx,max_idx))
+
+    print(chunks)
     print(subjid)
 
     n_repeats = 3
@@ -141,7 +144,7 @@ def main(subjid, hemi, roi_name, chunks):
         split_half = [fast_pearson(flat_rsm_roi1[:,0],flat_rsm_roi1[:,1])[0][0],
                     fast_pearson(flat_rsm_roi1[:,0],flat_rsm_roi1[:,2])[0][0],
                     fast_pearson(flat_rsm_roi1[:,1],flat_rsm_roi1[:,2])[0][0]]
-        NC_model = np.mean(split_half) * 100
+        NC_model = np.abs(np.mean(split_half) * 100) #can't have neg NC
         
         for roi_idx2 in range(num_rois): #columns - i.e. target data
 
@@ -155,7 +158,7 @@ def main(subjid, hemi, roi_name, chunks):
             split_half = [fast_pearson(flat_rsm_roi2[:,0],flat_rsm_roi2[:,1])[0][0],
                         fast_pearson(flat_rsm_roi2[:,0],flat_rsm_roi2[:,2])[0][0],
                         fast_pearson(flat_rsm_roi2[:,1],flat_rsm_roi2[:,2])[0][0]]
-            NC_target = np.mean(split_half) * 100
+            NC_target = np.abs(np.mean(split_half) * 100) #can't have neg NC
             
             rsm_corr = np.zeros((6))
             for r in range(6):
@@ -165,7 +168,7 @@ def main(subjid, hemi, roi_name, chunks):
             mega_matrix[roi_idx1,roi_idx2] = np.mean(rsm_corr) * np.sqrt(100/NC_model) * np.sqrt(100/NC_target)
 
     #save to local data folder
-    save_file = local_data_dir + 'processed/' + subjid + '/' + hemi + '_' + roi_name + '_' + min(chunks) + 'to' + max(chunks) + '.data'
+    save_file = local_data_dir + 'processed/' + subjid + '/' + hemi + '_' + roi_name + '_' + min_idx + 'to' + max_idx + '.data'
 
     with open(save_file, 'wb') as filehandle:
         # store the data as binary data stream
@@ -178,11 +181,14 @@ if __name__ == "__main__":
     parser.add_argument("--subjid", type=str)
     parser.add_argument("--hemi", type=str)
     parser.add_argument("--roi_name", type=str)
-    parser.add_argument("--chunks", type=list)
+    parser.add_argument("--min", type=int)
+    parser.add_argument("--max", type=int)
     ARGS, _ = parser.parse_known_args()
 
     main(
         ARGS.subjid,
         ARGS.hemi,
         ARGS.roi_name,
+        ARGS.min,
+        ARGS.max,
     )
