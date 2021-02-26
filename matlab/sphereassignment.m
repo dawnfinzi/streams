@@ -34,9 +34,9 @@ end
 
 % load stream ROI values
 if hh == 1 %left
-    roivals = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/data/nsddata/freesurfer/%s/label/lh.streams.mgz',subjid));  % load in an existing file?
+    roivals = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/data/nsddata/freesurfer/%s/label/lh.streams_shrink5.mgz',subjid));  % load in an existing file?
 else %right
-    roivals = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/data/nsddata/freesurfer/%s/label/rh.streams.mgz',subjid));  % load in an existing file?
+    roivals = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/data/nsddata/freesurfer/%s/label/rh.streams_shrink5.mgz',subjid));  % load in an existing file?
 end
 
 count = 1;
@@ -55,7 +55,7 @@ for r = 1:max(iix)
 end
 
 if hh == 2 %left hemi already completed
-    left = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/lh.tessellate_10vox.mgz',subjid));  % load in an existing file?
+    left = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/lh.tessellate_10vox_shrink5.mgz',subjid));  % load in an existing file?
     roivals = [left; iix];
 else
     roivals = iix;  
