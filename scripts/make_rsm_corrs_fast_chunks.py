@@ -131,6 +131,7 @@ def main(subjid, hemi, roi_name, min_idx, max_idx):
     print('starting mega matrix')
     #make the mega matrix!
     mega_matrix = np.zeros((len(chunks),num_rois))
+    m_idx = 0 #allow for chunks not starting at 0
 
     for cidx, roi_idx1 in enumerate(chunks): #rows - i.e. model candidate
         
@@ -165,7 +166,8 @@ def main(subjid, hemi, roi_name, min_idx, max_idx):
                 rsm_corr[r] = fast_pearson(flat_rsm_roi2[:, r1_trial_order[r]],
                                             flat_rsm_roi2[:, r2_trial_order[r]])[0][0]
             
-            mega_matrix[roi_idx1,roi_idx2] = np.mean(rsm_corr) * np.sqrt(100/NC_model) * np.sqrt(100/NC_target)
+            mega_matrix[m_idx,roi_idx2] = np.mean(rsm_corr) * np.sqrt(100/NC_model) * np.sqrt(100/NC_target)
+        m_idx += 1
 
     #save to local data folder
     save_file = local_data_dir + 'processed/' + subjid + '/' + hemi + '_' + roi_name + '_' + min_idx + 'to' + max_idx + '.data'
