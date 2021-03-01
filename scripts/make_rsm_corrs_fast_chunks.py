@@ -147,21 +147,20 @@ def main(subjid, hemi, roi_name, min_idx, max_idx):
                     fast_pearson(flat_rsm_roi1[:,1],flat_rsm_roi1[:,2])[0][0]]
         NC_model = np.abs(np.mean(split_half) * 100) #can't have neg NC
         
+        flat_rsm_roi2 = np.zeros((tril_flat_shape, n_repeats)) #initialize once then rewrite for time
+        rsm_corr = np.zeros((6))
         for roi_idx2 in range(num_rois): #columns - i.e. target data
 
-            flat_rsm_roi2 = np.zeros((tril_flat_shape, n_repeats))
             for r in range(n_repeats):
                 flip = betas_by_repeat_by_ROI[sidx][roi_idx2][r].T
                 rsm = fast_pearson(flip,flip)
                 flat_rsm_roi2[:, r] = get_flat_lower_tri(rsm,diagonal=False)
             
-            split_half = np.zeros((3))
             split_half = [fast_pearson(flat_rsm_roi2[:,0],flat_rsm_roi2[:,1])[0][0],
                         fast_pearson(flat_rsm_roi2[:,0],flat_rsm_roi2[:,2])[0][0],
                         fast_pearson(flat_rsm_roi2[:,1],flat_rsm_roi2[:,2])[0][0]]
             NC_target = np.abs(np.mean(split_half) * 100) #can't have neg NC
             
-            rsm_corr = np.zeros((6))
             for r in range(6):
                 rsm_corr[r] = fast_pearson(flat_rsm_roi2[:, r1_trial_order[r]],
                                             flat_rsm_roi2[:, r2_trial_order[r]])[0][0]
