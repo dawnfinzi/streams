@@ -150,22 +150,26 @@ def main(subjid, hemi, roi_name, min_idx, max_idx):
         flat_rsm_roi2 = np.zeros((tril_flat_shape, n_repeats)) #initialize once then rewrite for time
         rsm_corr = np.zeros((6))
         for roi_idx2 in range(num_rois): #columns - i.e. target data
-
-            for r in range(n_repeats):
-                flip = betas_by_repeat_by_ROI[sidx][roi_idx2][r].T
-                rsm = fast_pearson(flip,flip)
-                flat_rsm_roi2[:, r] = get_flat_lower_tri(rsm,diagonal=False)
             
-            split_half = [fast_pearson(flat_rsm_roi2[:,0],flat_rsm_roi2[:,1])[0][0],
-                        fast_pearson(flat_rsm_roi2[:,0],flat_rsm_roi2[:,2])[0][0],
-                        fast_pearson(flat_rsm_roi2[:,1],flat_rsm_roi2[:,2])[0][0]]
-            NC_target = np.abs(np.mean(split_half) * 100) #can't have neg NC
-            
-            for r in range(6):
-                rsm_corr[r] = fast_pearson(flat_rsm_roi2[:, r1_trial_order[r]],
-                                            flat_rsm_roi2[:, r2_trial_order[r]])[0][0]
-            
-            mega_matrix[m_idx,roi_idx2] = np.mean(rsm_corr) * np.sqrt(100/NC_model) * np.sqrt(100/NC_target)
+            if betas_by_repeat_by_ROI[sidx][roi_idx2][0].size == 0: #no betas
+                print(roi_idx2)
+                mega_matrix[m_idx, roi_idx2] = 0
+            else:
+                for r in range(n_repeats):
+                    flip = betas_by_repeat_by_ROI[sidx][roi_idx2][r].T
+                    rsm = fast_pearson(flip,flip)
+                    flat_rsm_roi2[:, r] = get_flat_lower_tri(rsm,diagonal=False)
+                
+                split_half = [fast_pearson(flat_rsm_roi2[:,0],flat_rsm_roi2[:,1])[0][0],
+                            fast_pearson(flat_rsm_roi2[:,0],flat_rsm_roi2[:,2])[0][0],
+                            fast_pearson(flat_rsm_roi2[:,1],flat_rsm_roi2[:,2])[0][0]]
+                NC_target = np.abs(np.mean(split_half) * 100) #can't have neg NC
+                
+                for r in range(6):
+                    rsm_corr[r] = fast_pearson(flat_rsm_roi2[:, r1_trial_order[r]],
+                                                flat_rsm_roi2[:, r2_trial_order[r]])[0][0]
+                
+                mega_matrix[m_idx,roi_idx2] = np.mean(rsm_corr) * np.sqrt(100/NC_model) * np.sqrt(100/NC_target)
         m_idx += 1
 
     #save to local data folder
