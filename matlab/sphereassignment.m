@@ -8,18 +8,18 @@ close all
 
 %% Sample the sphere
 addpath(genpath('/home/dfinzi/Desktop/S2-Sampling-Toolbox'))
-sampling = 100; %300 is relatively fine 
+sampling = 500; %300 is relatively fine 
 [SP, Tri, ~,~] = ParticleSampleSphere('N', sampling); 
 fv = struct('faces',Tri,'vertices',SP);
-fv = SubdivideSphericalMesh(fv,4);
+%fv = SubdivideSphericalMesh(fv,4);
 SP = fv.vertices;
 SP_scaled = SP;%*100;
 
 %% Convert to specified subject and hemi
 hemis = {'lh' 'rh'};
 
-subjix=6;hh=2;
-subjid='subj06';
+subjix=5;hh=2;
+subjid='subj05';
 
 surfS = cvnreadsurface(sprintf('subj%02d',subjix),hemis{hh},'sphere','orig');
 n = size(surfS.vertices,1);
@@ -34,9 +34,9 @@ end
 
 % load stream ROI values
 if hh == 1 %left
-    roivals = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/data/nsddata/freesurfer/%s/label/lh.streams_shrink5.mgz',subjid));  % load in an existing file?
+    roivals = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/data/nsddata/freesurfer/%s/label/lh.streams.mgz',subjid)); %_shrink5  % load in an existing file?
 else %right
-    roivals = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/data/nsddata/freesurfer/%s/label/rh.streams_shrink5.mgz',subjid));  % load in an existing file?
+    roivals = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/data/nsddata/freesurfer/%s/label/rh.streams.mgz',subjid)); %_shrink5  % load in an existing file?
 end
 
 count = 1;
@@ -46,7 +46,7 @@ for r = 1:max(iix)
     percent_stream = sum(streamvals~=0)/size(streamvals,1);
     
     %get rid of parcels based on overlap with stream ROIs
-    if percent_stream < .5 %if less than 50% within boundaries, remove
+    if percent_stream < .5 %if less than 50% within boundaries, remove %.9
         iix(find(iix==r)) = 0;
     else %update ROI numbering
         iix(find(iix==r)) = count;
@@ -55,7 +55,8 @@ for r = 1:max(iix)
 end
 
 if hh == 2 %left hemi already completed
-    left = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/lh.tessellate_10vox_shrink5.mgz',subjid));  % load in an existing file?
+    left = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/lh.tessellate_500.mgz',subjid));  % load in an existing file?
+    %left = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/lh.tessellate_10vox_shrink5.mgz',subjid));  % load in an existing file?
     roivals = [left; iix];
 else
     roivals = iix;  

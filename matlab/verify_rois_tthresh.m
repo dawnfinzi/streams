@@ -18,7 +18,7 @@ roilabels = {'early' 'midventral' 'midlateral' 'midparietal' 'ventral' 'parietal
 %% include previous rois drawn (or not)
 
 % load in an existing file (both hemispheres)
-roivals = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/data/nsddata/freesurfer/%s/label/?h.streams_shrink10.mgz',subjid));  % load in an existing file?
+roivals = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/data/nsddata/freesurfer/%s/label/?h.streams_shrink5.mgz',subjid));  % load in an existing file?
 
 % load in rois for only one hemi (example: right)
 %roivals = zeros(n_vertices,1);

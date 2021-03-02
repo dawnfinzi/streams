@@ -173,7 +173,7 @@ def main(subjid, hemi, roi_name, min_idx, max_idx):
         m_idx += 1
 
     #save to local data folder
-    save_file = local_data_dir + 'processed/' + subjid + '/' + hemi + '_' + roi_name + '_' + min_idx + 'to' + max_idx + '.data'
+    save_file = local_data_dir + 'processed/' + subjid + '/' + hemi + '_' + roi_name + '_' + str(min_idx) + 'to' + str(max_idx) + '.data'
 
     with open(save_file, 'wb') as filehandle:
         # store the data as binary data stream
