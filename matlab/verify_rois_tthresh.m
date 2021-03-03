@@ -1,3 +1,10 @@
+clear all
+close all
+
+hemi = 'rh'; 
+subjid = 'subj05';  
+t_thresh = .05;
+
 % load custom map
 nc = load(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/lh_split_half.mat', subjid));
 lh_nc = nc.mean';
