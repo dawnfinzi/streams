@@ -166,7 +166,7 @@ def main(subjid, hemi, roi_name, min_idx, max_idx):
                 NC_target = np.abs(np.mean(split_half) * 100) #can't have neg NC
                 
                 for r in range(6):
-                    rsm_corr[r] = fast_pearson(flat_rsm_roi2[:, r1_trial_order[r]],
+                    rsm_corr[r] = fast_pearson(flat_rsm_roi1[:, r1_trial_order[r]],
                                                 flat_rsm_roi2[:, r2_trial_order[r]])[0][0]
                 
                 mega_matrix[m_idx,roi_idx2] = np.mean(rsm_corr) * np.sqrt(100/NC_model) * np.sqrt(100/NC_target)

@@ -159,13 +159,13 @@ def main(subjid, hemi, roi_name):
             
             rsm_corr = np.zeros((6))
             for r in range(6):
-                rsm_corr[r] = fast_pearson(flat_rsm_roi2[:, r1_trial_order[r]],
+                rsm_corr[r] = fast_pearson(flat_rsm_roi1[:, r1_trial_order[r]],
                                             flat_rsm_roi2[:, r2_trial_order[r]])[0][0]
             
             mega_matrix[roi_idx1,roi_idx2] = np.mean(rsm_corr) * np.sqrt(100/NC_model) * np.sqrt(100/NC_target)
 
     #save to local data folder
-    save_file = local_data_dir + 'processed/' + subjid + '_' + hemi + '_' + roi_name + '.data'
+    save_file = local_data_dir + 'processed/' + subjid + '_' + hemi + '_' + roi_name + '_fast.data'
 
     with open(save_file, 'wb') as filehandle:
         # store the data as binary data stream
