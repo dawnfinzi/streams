@@ -19,10 +19,8 @@ roivals = [left; right];
 %% Manual plotting and saving of mgzs using cvndefinerois
 roilabels=[];
 clear col
-sample_cols = hsv(10);
-
+sample_cols = viridis(15);
 col = sample_cols(full+1,:);
-
 
 % sample_cols = jet(5);
 % for r = 1:max(roivals);
@@ -82,8 +80,7 @@ col = sample_cols(full+1,:);
 %     end
 % end
 
-cmap   = col;
-%cmap   = repmat(hsv(256), 1, 1);
+cmap   = col; %repmat(hsv(256), 1, 1);
 
 rng    = [1 max(right)];
 threshs = {[] [] []};
@@ -92,3 +89,46 @@ mgznames = {'corticalsulc' 'Kastner2015', 'streams'};
 crngs = {[0 28] [0 25] [0 25]};
 cmaps = {jet(256) jet(256) jet(256)};
 cvndefinerois;
+
+%% video
+matrix = squeeze(matrix);
+extraopts = {'roiname',{'streams'},'roicolor',{'k'},'drawroinames',false, 'roiwidth', 2};
+
+imdir = '/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/processed/images_06_500/';
+for r = 1:length(matrix)
+    filename = fullfile(imdir, [sprintf('%03d',r) '.jpg']);
+    vec = matrix(r,:)';
+    m = int16(max(vec(vec~=1))*1000);
+    sample_cols = autumn(double(m)); %autumn(length(matrix));
+       
+    if m~=0
+        [v, si] = sortrows(vec);
+        idx = int16(v*1000);
+        idx(idx < 1) = 1; %no zeros or negative
+        idx(idx == 1000) = 1; %recolor as seed later
+        full = [si, sample_cols(idx,:)];
+        full = sortrows(full);
+        full(r,:) = [1 0 0 0]; %seed
+        cmap   = full(:,2:4);
+
+        [rawimg,Lookup,rgbimg] = cvnlookup(subjid,13,roivals,[1,length(matrix)], double(cmap), .9,[],1,extraopts);
+        imwrite(rgbimg(:,1652:end,:), filename)
+    end
+    
+end
+close all
+
+imageNames = dir(fullfile(imdir, '*.jpg')); 
+imageNames = {imageNames.name}';
+
+writerObj = VideoWriter('subj06_500_scale_corrs.avi');
+writerObj.FrameRate=3;
+
+open(writerObj);
+
+for ii = 1:length(imageNames)
+    img = imread(fullfile(imdir, imageNames{ii})); 
+    writeVideo(writerObj,img)
+end
+close(writerObj)
+

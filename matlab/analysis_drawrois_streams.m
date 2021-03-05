@@ -21,8 +21,12 @@ cmaps = {jet(256) jet(256), jet};  % colormaps for the quantities (1 x Q)
 threshs = {0.5 0.5 [10]};
 
 % roi info
-cmap   = jet(256);   % colormap for ROIs
-rng    = [0 7];      % should be [0 N] where N is the max ROI index
+cmap   = [166, 166, 166; 244, 189, 216;...
+    204, 218, 255; 179, 255, 198; 220, 38, 127;...
+    77, 127, 255; 0, 102, 0]; 
+cmap = cmap/256;
+%{'#a6a6a6'; '#f4bdd8'; '#ccdaff'; '#b3ffc6',  '#DC267F' ,'#4d7fff','#006600']; %jet(256);   % colormap for ROIs
+rng    = [1 7];      % should be [0 N] where N is the max ROI index
 roilabels = {'early' 'midventral' 'midlateral' 'midparietal' 'ventral' 'parietal' 'lateral' };  % 1 x N cell vector of strings
 
 %% include previous rois drawn (or not)
