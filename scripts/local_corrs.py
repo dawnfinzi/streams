@@ -105,7 +105,8 @@ def main(subjid, hemi):
     
     #create dict for matlab
     cs = {}
-    cs['matrix'] = corr_struct_r1r2[1:100,:]
+    cs['matrix1'] = corr_struct_r1r2[0:15000,:]
+    cs['matrix2'] = corr_struct_r1r2[15000:39216,:]
     cs['idx'] = stream_idx
 
     #save out
