@@ -17,7 +17,7 @@ import scipy.io
 import itertools 
 import pickle
 import sys
-
+from timeit import default_timer as timer
 utils_dir = '/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/code/streams/utils/'
 sys.path.append(utils_dir)
 
@@ -37,6 +37,7 @@ def vcorrcoef(X,y):
 def main(subjid, hemi, roi_name):
     
     print(subjid)
+    start = timer() #start the clock
 
     n_repeats = 3
 
@@ -186,7 +187,9 @@ def main(subjid, hemi, roi_name):
     with open(save_file, 'wb') as filehandle:
         # store the data as binary data stream
         pickle.dump([mega_matrix], filehandle)
-
+    
+    end = timer()
+    print(end - start)
 
 if __name__ == "__main__":
     # Parse command line args
