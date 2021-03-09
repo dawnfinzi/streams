@@ -148,7 +148,7 @@ def main(subjid, hemi, roi_name):
         split_half = [stats.pearsonr(flat_rsm0[ridx,:],flat_rsm1[ridx,:])[0],
                     stats.pearsonr(flat_rsm0[ridx,:],flat_rsm2[ridx,:])[0],
                     stats.pearsonr(flat_rsm1[ridx,:],flat_rsm2[ridx,:])[0]]
-        NC[ridx] = np.mean(split_half) * 100
+        NC[ridx] = np.abs(np.mean(split_half) * 100) #no neg noise ceiling
     
     print('starting mega matrix')
     #make the mega matrix!
