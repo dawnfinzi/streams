@@ -34,7 +34,7 @@ def vcorrcoef(X,y):
     r = r_num/r_den
     return r
 
-def main(subjid, hemi, roi_name):
+def main(subjid, hemi, roi_name, num_imgs):
     
     print(subjid)
     start = timer() #start the clock
@@ -50,30 +50,28 @@ def main(subjid, hemi, roi_name):
 
     #get trial ids and mask        
     all_ids = []
-    max_session = np.zeros(len([subjid]))
+    which_reps = []
+    id_nums_3reps = []
+    mask_3reps = []
+
     for sidx, sid in enumerate([subjid]):
-        
+
         data = pd.read_csv(data_dir+'nsddata/ppdata/subj'+ sid +'/behav/responses.tsv', sep='\t')
-        
-        max_session[sidx] = np.max(np.array(data['SESSION'])) 
-        
+
+        max_session = np.max(np.array(data['SESSION'])) 
+
         all_ids.append(np.array(data['73KID']))
 
-    which_reps = []
-    for sidx, sid in enumerate([subjid]):
         vals, idx_start, count = np.unique(all_ids[sidx], return_counts=True,
                                         return_index=True)
         which_reps.append(vals[count == n_repeats])
         
-    least_trials = min(which_reps, key=len)
+        if num_imgs == 0: #set to all images
+            which_reps = which_reps[0]
+        else:
+            which_reps = which_reps[0][0:num_imgs] #use only a subset of trials
 
-    id_nums_3reps = []
-    mask_3reps = []
-    for sidx, sid in enumerate([subjid]):
-        
-        data = pd.read_csv(data_dir+'nsddata/ppdata/subj'+ sid +'/behav/responses.tsv', sep='\t')
-        
-        mask_3reps.append(np.isin(all_ids[sidx],which_reps[sidx]))
+        mask_3reps.append(np.isin(all_ids[sidx],which_reps))
         id_nums_3reps.append(np.array(data['73KID'])[mask_3reps[sidx]])
 
     arr1inds = id_nums_3reps[sidx].argsort()
@@ -87,7 +85,7 @@ def main(subjid, hemi, roi_name):
         sorted_betas = []
         
         #get all betas across all sessions
-        for sess in range(1,int(max_session[sidx])+1):
+        for sess in range(1,int(max_session)+1):
             print(sess)
                     
             if(sess < 10):
@@ -146,7 +144,7 @@ def main(subjid, hemi, roi_name):
         split_half = [stats.pearsonr(flat_rsm0[ridx,:],flat_rsm1[ridx,:])[0],
                     stats.pearsonr(flat_rsm0[ridx,:],flat_rsm2[ridx,:])[0],
                     stats.pearsonr(flat_rsm1[ridx,:],flat_rsm2[ridx,:])[0]]
-        NC[ridx] = np.mean(split_half) * 100
+        NC[ridx] = np.abs(np.mean(split_half) * 100)
     
     print('starting mega matrix')
     #make the mega matrix!
@@ -182,7 +180,7 @@ def main(subjid, hemi, roi_name):
 
 
     #save to local data folder
-    save_file = local_data_dir + 'processed/' + subjid + '_' + hemi + '_' + roi_name + '_compbyrow.data'
+    save_file = local_data_dir + 'processed/' + subjid + '_' + hemi + '_' + roi_name + '_' + str(num_imgs) + 'imgs_compbyrow.data'
 
     with open(save_file, 'wb') as filehandle:
         # store the data as binary data stream
@@ -197,10 +195,12 @@ if __name__ == "__main__":
     parser.add_argument("--subjid", type=str)
     parser.add_argument("--hemi", type=str)
     parser.add_argument("--roi_name", type=str)
+    parser.add_argument("--num_imgs", type=int)
     ARGS, _ = parser.parse_known_args()
 
     main(
         ARGS.subjid,
         ARGS.hemi,
         ARGS.roi_name,
+        ARGS.num_imgs,
     )
