@@ -26,8 +26,15 @@ from rsm_utils import get_flat_lower_tri, get_reliability_data
 data_dir = '/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/data/'
 local_data_dir = '/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/'
 
+def vcorrcoef(X,y):
+    Xm = np.reshape(np.mean(X,axis=1),(X.shape[0],1))
+    ym = np.mean(y)
+    r_num = np.sum((X-Xm)*(y-ym),axis=1)
+    r_den = np.sqrt(np.sum((X-Xm)**2,axis=1)*np.sum((y-ym)**2))
+    r = r_num/r_den
+    return r
 
-def main(subjid, hemi, roi_name, thresh=0.0):
+def main(subjid, hemi, roi_name, thresh):
     
     print(subjid)
 
@@ -150,36 +157,34 @@ def main(subjid, hemi, roi_name, thresh=0.0):
 
     r1_trial_order = [0, 0, 1, 1, 2, 2]
     r2_trial_order = [1, 2, 0, 2, 0, 1]
-
+    
+    # get NC for each ROI
+    NC = np.zeros((num_rois))
+    for ridx in range(num_rois):
+        split_half = np.zeros((3))
+        split_half = [stats.pearsonr(flat_rsm[ridx,:,0],flat_rsm[ridx,:,1])[0],
+                    stats.pearsonr(flat_rsm[ridx,:,0],flat_rsm[ridx,:,2])[0],
+                    stats.pearsonr(flat_rsm[ridx,:,1],flat_rsm[ridx,:,2])[0]]
+        NC[ridx] = np.abs(np.mean(split_half) * 100)
+        
     print('starting mega matrix')
     #make the mega matrix!
     mega_matrix = np.zeros((num_rois,num_rois))
 
     for roi_idx1 in range(num_rois): #rows - i.e. model candidate
         
-        split_half = np.zeros((3))
-        split_half = [stats.pearsonr(flat_rsm[roi_idx1,:,0],flat_rsm[roi_idx1,:,1])[0],
-                    stats.pearsonr(flat_rsm[roi_idx1,:,0],flat_rsm[roi_idx1,:,2])[0],
-                    stats.pearsonr(flat_rsm[roi_idx1,:,1],flat_rsm[roi_idx1,:,2])[0]]
-        NC_model = np.mean(split_half) * 100
+        row = np.zeros((6,num_rois))
+        for r in range(6): #loop through combos
+
+            y = flat_rsm0[roi_idx1,:,r1_trial_order[r]] # 1 x k
+            X = flat_rsm[:,:,r1_trial_order[r]] # N x k
+            
+            row[r,:] = vcorrcoef(X,y)
         
-        for roi_idx2 in range(num_rois): #columns - i.e. target data
-            
-            split_half = np.zeros((3))
-            split_half = [stats.pearsonr(flat_rsm[roi_idx2,:,0],flat_rsm[roi_idx2,:,1])[0],
-                        stats.pearsonr(flat_rsm[roi_idx2,:,0],flat_rsm[roi_idx2,:,2])[0],
-                        stats.pearsonr(flat_rsm[roi_idx2,:,1],flat_rsm[roi_idx2,:,2])[0]]
-            NC_target = np.mean(split_half) * 100
-            
-            rsm_corr = np.zeros((6))
-            for r in range(6):
-                rsm_corr[r] = stats.pearsonr(flat_rsm[roi_idx1,:, r1_trial_order[r]],
-                                            flat_rsm[roi_idx2,:, r2_trial_order[r]])[0]
-            
-            mega_matrix[roi_idx1,roi_idx2] = np.mean(rsm_corr) * np.sqrt(100/NC_model) * np.sqrt(100/NC_target)
+        mega_matrix[roi_idx1,:] = np.mean(row, axis = 0) * np.sqrt(100/NC[roi_idx1]) * np.sqrt(100/NC)
 
     #save to local data folder
-    save_file = local_data_dir + 'processed/' + subjid + '_' + hemi + '_' + roi_name + '.data'
+    save_file = local_data_dir + 'processed/' + subjid + '_' + hemi + '_' + roi_name + '_thresh' + str(thresh*100) + '.data'
 
     with open(save_file, 'wb') as filehandle:
         # store the data as binary data stream
