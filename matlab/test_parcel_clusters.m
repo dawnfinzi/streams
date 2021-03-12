@@ -1,13 +1,14 @@
 clear all
 close all
 
-subjix=6;hh=2;
-subjid='subj06';
+subjix=2;hh=2;
+subjid='subj02';
+sid = '02';
 
-l = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/lh.tessellate_500.mgz',subjid));  % load in an existing file?
+l = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/lh.tessellate_1000.mgz',subjid));  % load in an existing file?
 left = zeros(length(l),1);
 
-right = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/rh.tessellate_500.mgz',subjid));  % load in an existing file?
+right = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/rh.tessellate_1000.mgz',subjid));  % load in an existing file?
 %%if loading both hemis - update right roi nums to account for left
 % for i = 1:length(right)
 %     if right(i) ~= 0
@@ -17,68 +18,14 @@ right = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn
 roivals = [left; right];
 
 %% Manual plotting and saving of mgzs using cvndefinerois
+load(['/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/processed/'  subjid  '_rh_500_cluster_testing.mat']);
+load(['/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/processed/'  subjid  '_rh_500_ap.mat']);
+
+
 roilabels=[];
 clear col
-sample_cols = viridis(15);
+sample_cols = viridis(single(max(full)+1)); %viridis
 col = sample_cols(full+1,:);
-
-% sample_cols = jet(5);
-% for r = 1:max(roivals);
-%     if split1(r) == 0
-%         col(r,:) = [1, 1, 1];
-%     elseif split1(r) == 1
-%         col(r,:) = sample_cols(1,:);
-%     end
-% end
-% for r = 1:max(roivals);
-%     if split4(r) == 0
-%         col(r,:) = [1, 1, 1];
-%     elseif split4(r) == 1
-%         col(r,:) = sample_cols(1,:);
-%     elseif split4(r) == 2
-%         col(r,:) = sample_cols(2,:);
-%     elseif split4(r) == 3
-%         col(r,:) = sample_cols(3,:);
-%     elseif split4(r) == 4
-%         col(r,:) = sample_cols(4,:);
-%     elseif split4(r) == 5
-%         col(r,:) = sample_cols(5,:);
-%     elseif split4(r) == 6
-%         col(r,:) = sample_cols(6,:);
-%     elseif split4(r) == 7
-%         col(r,:) = sample_cols(7,:);
-%     elseif split4(r) == 8
-%         col(r,:) = sample_cols(8,:);
-%     elseif split4(r) == 9
-%         col(r,:) = sample_cols(9,:);
-%     elseif split4(r) == 10
-%         col(r,:) = sample_cols(10,:);
-%     end
-% end
-% sample_cols = hsv(10);
-% for r = 1:max(roivals);
-%     if ap(r) == 0
-%         col(r,:) = sample_cols(8,:);
-%     elseif ap(r) == 1
-%         col(r,:) = sample_cols(1,:);
-%     elseif ap(r) == 2
-%         col(r,:) = sample_cols(2,:);
-%     elseif ap(r) == 3
-%         col(r,:) = sample_cols(3,:);
-%     elseif ap(r) == 4
-%         col(r,:) = sample_cols(4,:);
-%     elseif ap(r) == 5
-%         col(r,:) = sample_cols(5,:);
-%     elseif ap(r) == 6
-%         col(r,:) = sample_cols(6,:);
-%     elseif ap(r) == 7
-%         col(r,:) = sample_cols(7,:);
-%     elseif ap(r) == 8
-%         col(r,:) = sample_cols(8,:);
-%     elseif ap(r) == 9
-%         col(r,:) = sample_cols(9,:);
-%     end
-% end
 
 cmap   = col; %repmat(hsv(256), 1, 1);
 
@@ -91,10 +38,15 @@ cmaps = {jet(256) jet(256) jet(256)};
 cvndefinerois;
 
 %% video
-matrix = squeeze(matrix);
+%load(['/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/processed/'  sid  '_500_rh_mega_matrix.mat']);
+%matrix = squeeze(matrix);
 extraopts = {'roiname',{'streams'},'roicolor',{'k'},'drawroinames',false, 'roiwidth', 2};
 
-imdir = '/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/processed/images_06_500/';
+imdir = ['/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/processed/images_'  sid  '_1000_2000ims/'];
+if ~exist(imdir)
+    mkdir(imdir)
+end
+
 for r = 1:length(matrix)
     filename = fullfile(imdir, [sprintf('%03d',r) '.jpg']);
     vec = matrix(r,:)';
@@ -114,6 +66,7 @@ for r = 1:length(matrix)
         [rawimg,Lookup,rgbimg] = cvnlookup(subjid,13,roivals,[1,length(matrix)], double(cmap), .9,[],1,extraopts);
         imwrite(rgbimg(:,1652:end,:), filename)
     end
+    close all
     
 end
 close all
@@ -121,7 +74,8 @@ close all
 imageNames = dir(fullfile(imdir, '*.jpg')); 
 imageNames = {imageNames.name}';
 
-writerObj = VideoWriter('subj06_500_scale_corrs.avi');
+cd(imdir)
+writerObj = VideoWriter(['subj' sid '_1000_scale_corrs.avi']);
 writerObj.FrameRate=3;
 
 open(writerObj);
