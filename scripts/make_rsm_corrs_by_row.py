@@ -2,6 +2,8 @@
 Given some subject, hemisphere and set of ROIs, create RSMs across all (~10000) images and correlate RSMs across ROIs
 
 Saves a "mega matrix" that is the correlation matrix for the ROIs
+
+Set "num_imgs" to 0 to use all images and set "thresh" equal to a negative number to have no thresholding applied
 """
 
 #import packages
@@ -34,7 +36,7 @@ def vcorrcoef(X,y):
     r = r_num/r_den
     return r
 
-def main(subjid, hemi, roi_name, num_imgs):
+def main(subjid, hemi, roi_name, num_imgs, thresh):
     
     print(subjid)
     start = timer() #start the clock
@@ -47,6 +49,17 @@ def main(subjid, hemi, roi_name, num_imgs):
     parcels.append(mgh_file.get_fdata()[:,0,0])
 
     num_rois = int(np.max(parcels))
+    
+    #get split-half reliablity for each voxel
+    reliability = get_reliability_data([subjid], hemi)
+
+    sh_by_ROI = [[[] for j in range(num_rois)] for i in range(len([subjid]))]
+    total_vox = np.zeros((len([subjid]), num_rois))
+
+    for sidx, sid in enumerate([subjid]):  
+        for roi_idx in range(num_rois):       
+            sh_by_ROI[sidx][roi_idx]=reliability[sidx][:,parcels[sidx] == roi_idx+1]
+            total_vox[sidx,roi_idx] = len(sh_by_ROI[sidx][roi_idx][0])
 
     #get trial ids and mask        
     all_ids = []
@@ -118,6 +131,25 @@ def main(subjid, hemi, roi_name, num_imgs):
     del betas_by_ROI #mems cleanup 
     del sorted_betas
     
+    if thresh > 0:
+    #Replace voxels with split-half reliability < thresh with NaNs and then trim those from data structure
+    #convert to nans
+        for sidx, sid in enumerate([subjid]):  
+            for roi_idx in range(num_rois): 
+                for vox in range(len(sh_by_ROI[sidx][roi_idx][0])):
+                    if sh_by_ROI[sidx][roi_idx][0][vox] < thresh:
+                        betas_by_repeat_by_ROI[sidx][roi_idx][0][:,vox]=np.nan
+                        betas_by_repeat_by_ROI[sidx][roi_idx][1][:,vox]=np.nan
+                        betas_by_repeat_by_ROI[sidx][roi_idx][2][:,vox]=np.nan    
+        #trim out nans
+        for sidx, sid in enumerate([subjid]):   
+            for roi_idx in range(num_rois): 
+                for r in range(n_repeats):
+                    temp = betas_by_repeat_by_ROI[sidx][roi_idx][r]
+                    trimmed = temp[:,~np.all(np.isnan(temp), axis=0)]
+
+                    betas_by_repeat_by_ROI[sidx][roi_idx][r] = trimmed
+
     #Create RSMS for all the ROIs, repeats and subjects
     tril_flat_shape = int((betas_by_repeat_by_ROI[0][0][0].shape[0]**2/2) - (betas_by_repeat_by_ROI[0][0][0].shape[0]/2))
     flat_rsm0 = np.zeros((num_rois, tril_flat_shape))
@@ -180,7 +212,7 @@ def main(subjid, hemi, roi_name, num_imgs):
 
 
     #save to local data folder
-    save_file = local_data_dir + 'processed/' + subjid + '_' + hemi + '_' + roi_name + '_' + str(num_imgs) + 'imgs_compbyrow.data'
+    save_file = local_data_dir + 'processed/parcel_megas/' + subjid + '_' + hemi + '_' + roi_name + '_' + str(num_imgs) + 'imgs_thresh' + str(100*thresh) + '_compbyrow.data'
 
     with open(save_file, 'wb') as filehandle:
         # store the data as binary data stream
@@ -195,7 +227,8 @@ if __name__ == "__main__":
     parser.add_argument("--subjid", type=str)
     parser.add_argument("--hemi", type=str)
     parser.add_argument("--roi_name", type=str)
-    parser.add_argument("--num_imgs", type=int)
+    parser.add_argument("--num_imgs", type=int, default = 0)
+    parser.add_argument("--thresh", type=float, default = -1.0)
     ARGS, _ = parser.parse_known_args()
 
     main(
@@ -203,4 +236,5 @@ if __name__ == "__main__":
         ARGS.hemi,
         ARGS.roi_name,
         ARGS.num_imgs,
+        ARGS.thresh,
     )
