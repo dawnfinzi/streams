@@ -5,10 +5,10 @@ subjix=2;hh=2;
 subjid='subj02';
 sid = '02';
 
-l = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/lh.tessellate_1000.mgz',subjid));  % load in an existing file?
+l = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/lh.tessellate_500.mgz',subjid));  % load in an existing file?
 left = zeros(length(l),1);
 
-right = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/rh.tessellate_1000.mgz',subjid));  % load in an existing file?
+right = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/rh.tessellate_500.mgz',subjid));  % load in an existing file?
 %%if loading both hemis - update right roi nums to account for left
 % for i = 1:length(right)
 %     if right(i) ~= 0
@@ -18,8 +18,8 @@ right = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn
 roivals = [left; right];
 
 %% Manual plotting and saving of mgzs using cvndefinerois
-load(['/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/processed/'  subjid  '_rh_500_cluster_testing.mat']);
-load(['/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/processed/'  subjid  '_rh_500_ap.mat']);
+load(['/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/processed/clusters/'  subjid  '_rh_500_cluster_testing.mat']);
+load(['/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/processed/clusters/'  subjid  '_rh_500_ap.mat']);
 
 
 roilabels=[];
@@ -38,11 +38,11 @@ cmaps = {jet(256) jet(256) jet(256)};
 cvndefinerois;
 
 %% video
-%load(['/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/processed/'  sid  '_500_rh_mega_matrix.mat']);
-%matrix = squeeze(matrix);
+load(['/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/processed/parcel_megas/'  sid  '_500_rh_mega_matrix.mat']);%matrix = squeeze(matrix);
+matrix=squeeze(matrix);
 extraopts = {'roiname',{'streams'},'roicolor',{'k'},'drawroinames',false, 'roiwidth', 2};
 
-imdir = ['/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/processed/images_'  sid  '_1000_2000ims/'];
+imdir = ['/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/processed/movies/images_'  sid  '_500/'];
 if ~exist(imdir)
     mkdir(imdir)
 end
@@ -75,7 +75,7 @@ imageNames = dir(fullfile(imdir, '*.jpg'));
 imageNames = {imageNames.name}';
 
 cd(imdir)
-writerObj = VideoWriter(['subj' sid '_1000_scale_corrs.avi']);
+writerObj = VideoWriter(['subj' sid '_500_corrs.avi']);
 writerObj.FrameRate=3;
 
 open(writerObj);

@@ -1,15 +1,14 @@
 clear all
 close all
 
-subjix=6;hh=2;
-subjid='subj06';
-sid = '06';
+subjix=2;hh=2;
+subjid='subj02';
+sid = '02';
 
-
-parcelvals = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/rh.tessellate_1000_trim10.mgz',subjid));  % load in an existing file?
+parcelvals = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/freesurfer/%s/rh.tessellate_500.mgz',subjid));  % load in an existing file?
 streamvals = cvnloadmgz(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/data/nsddata/freesurfer/%s/label/rh.streams.mgz',subjid));  % load in an existing file?
 
-load(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/processed/parcel_megas/%s_1000_trim10_rh_mega_matrix.mat',sid));
+load(sprintf('/oak/stanford/groups/kalanit/biac2/kgs/projects/Dawn/NSD/local_data/processed/parcel_megas/%s_500_rh_mega_matrix.mat',sid));
 mega_matrix=squeeze(matrix);
 
 %% determine stream roi for each parcel roi
