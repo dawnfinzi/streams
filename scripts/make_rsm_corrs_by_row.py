@@ -206,7 +206,7 @@ def main(subjid, hemi, roi_name, num_imgs, thresh):
                 y = flat_rsm2[roi_idx1,:] # 1 x k
                 X = flat_rsm1 # N x k
 
-            row[r,:] = vcorrcoef(X,y)
+            row[r,:] = np.abs(vcorrcoef(X,y)) #only positive
 
         mega_matrix[roi_idx1,:] = np.mean(row, axis = 0) * np.sqrt(100/NC[roi_idx1]) * np.sqrt(100/NC)
 
