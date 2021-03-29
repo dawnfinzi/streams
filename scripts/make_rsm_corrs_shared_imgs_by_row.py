@@ -73,8 +73,12 @@ def main(subjid, hemi, roi_name):
                                         return_index=True)
         shared_3_reps.append(vals[count == n_repeats])
         
-        least_trials = min(shared_3_reps, key=len)
+    least_trials = min(shared_3_reps, key=len)
+
+    for sidx, sid in enumerate([subjid]):
         
+        data = pd.read_csv(data_dir+'nsddata/ppdata/subj'+ sid +'/behav/responses.tsv', sep='\t')
+            
         shared_mask_3reps.append(np.isin(all_ids[sidx],least_trials))
         shared_id_nums_3reps.append(np.array(data['73KID'])[shared_mask_3reps[sidx]])
 
