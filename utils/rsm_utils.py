@@ -22,18 +22,22 @@ def get_flat_lower_tri(x, diagonal=False):
     lower_idx = np.tril_indices(x.shape[0], k)
     return x[lower_idx]
 
-def get_ROI_data(subjects, hemi):
+def get_ROI_data(subjects, hemi, roi='streams'):
     """
     Returns indices for all stream ROIs for requested subjects
     Inputs
         subjects: list of subject ids
         hemi: which hemisphere to pull data for ('rh' or 'lh')
     """
-    streams = []
+    roi_data = []
     for sidx, sid in enumerate(subjects):
-        mgh_file = mgh.load(data_dir+'nsddata/freesurfer/subj'+ sid +'/label/'+ hemi +'.streams.mgz')
-        streams.append(mgh_file.get_fdata()[:,0,0])
-    return streams
+        if roi == 'streams':
+            roi_stem = 'streams'
+        else: #floc
+            roi_stem = 'subj' + sid + '_floc_rois'
+        mgh_file = mgh.load(data_dir+'nsddata/freesurfer/subj'+ sid +'/label/'+ hemi +'.' + roi_stem + '.mgz')
+        roi_data.append(mgh_file.get_fdata()[:,0,0])
+    return roi_data
 
 def get_reliability_data(subjects, hemi):
     """
@@ -51,7 +55,7 @@ def get_reliability_data(subjects, hemi):
         reliability.append(sh['mean'])
     return reliability
 
-def make_flat_rsms(subjects, ROIs, hemi, thresh, zscore=True):
+def make_flat_rsms(subjects, ROIs, hemi, thresh, zscore=True, floc=False):
     """
     Returns flattened lower triangle of RSM
     (RSM is RSM for each requested subject and ROI on the 515 shared images)
@@ -69,12 +73,13 @@ def make_flat_rsms(subjects, ROIs, hemi, thresh, zscore=True):
     reliability = get_reliability_data(subjects, hemi)
 
     #get organized betas
+    floc_stem = ['_FLOC' if floc else '']
     if zscore:
-        with open(local_data_dir + 'processed/'+ hemi +'_betas_by_repeat_by_ROI_zscore.data', 'rb') as filehandle:
+        with open(local_data_dir + 'processed/'+ hemi +'_betas_by_repeat_by_ROI_zscore' + floc_stem + '.data', 'rb') as filehandle:
             # read the data as binary data stream
             betas_by_repeat_by_ROI = pickle.load(filehandle)
     else:
-        with open(local_data_dir + 'processed/'+ hemi +'_betas_by_repeat_by_ROI.data', 'rb') as filehandle:
+        with open(local_data_dir + 'processed/'+ hemi +'_betas_by_repeat_by_ROI' + floc_stem + '.data', 'rb') as filehandle:
             # read the data as binary data stream
             betas_by_repeat_by_ROI = pickle.load(filehandle)
         
